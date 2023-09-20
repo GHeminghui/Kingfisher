@@ -564,7 +564,7 @@ extension AnimatedImageView {
                 guard let newImageRef = Animator.SDCGImageCreateCopy(cgImage: cgImage) else {
                     return KFCrossPlatformImage(cgImage: cgImage)
                 }
-                return KFCrossPlatformImage(cgImage: decodedImageRef)
+                return KFCrossPlatformImage(cgImage: newImageRef)
             } else {
                 let image = KFCrossPlatformImage(cgImage: cgImage)
                 if backgroundDecode {
