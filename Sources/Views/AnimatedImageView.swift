@@ -556,12 +556,14 @@ extension AnimatedImageView {
                 // To get a workaround, create another image ref and use that to create the final image. This leads to
                 // some performance loss, but there is little we can do.
                 // https://github.com/onevcat/Kingfisher/issues/1844
-                guard let context = GraphicsContext.current(size: imageSize, scale: imageScale, inverting: true, cgImage: cgImage),
-                      let decodedImageRef = cgImage.decoded(on: context, scale: imageScale)
-                else {
+//                guard let context = GraphicsContext.current(size: imageSize, scale: imageScale, inverting: true, cgImage: cgImage),
+//                      let decodedImageRef = cgImage.decoded(on: context, scale: imageScale)
+//                else {
+//                    return KFCrossPlatformImage(cgImage: cgImage)
+//                }
+                guard let newImageRef = Animator.SDCGImageCreateCopy(cgImage: cgImage) else {
                     return KFCrossPlatformImage(cgImage: cgImage)
                 }
-                
                 return KFCrossPlatformImage(cgImage: decodedImageRef)
             } else {
                 let image = KFCrossPlatformImage(cgImage: cgImage)
@@ -631,6 +633,27 @@ extension AnimatedImageView {
             } else {
                 return [Int](nextIndex..<frameCount) + [Int](0...lastIndex)
             }
+        }
+        
+        static func SDCGImageCreateCopy(cgImage: CGImage?) -> CGImage? {
+            guard let cgImage = cgImage,
+                  let space = cgImage.colorSpace,
+                  let provider = cgImage.dataProvider
+            else {
+                return nil
+            }
+            
+            let width = cgImage.width
+            let height = cgImage.height
+            let bitsPerComponent = cgImage.bitsPerComponent
+            let bitsPerPixel = cgImage.bitsPerPixel
+            let bytesPerRow = cgImage.bytesPerRow
+            let bitmapInfo = cgImage.bitmapInfo
+            let decode = cgImage.decode
+            let shouldInterpolate = cgImage.shouldInterpolate
+            let intent = cgImage.renderingIntent
+            let newImage = CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: space, bitmapInfo: bitmapInfo, provider: provider, decode: decode, shouldInterpolate: shouldInterpolate, intent: intent)
+            return newImage
         }
     }
 }
